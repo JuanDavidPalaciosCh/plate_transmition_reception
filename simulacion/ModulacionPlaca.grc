@@ -1,0 +1,1048 @@
+options:
+  parameters:
+    author: fabian
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: ModulacionPlaca
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Not titled yet
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: 100e3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: analog_const_source_x_0
+  id: analog_const_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [424, 260.0]
+    rotation: 0
+    state: true
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: 433e2
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: float
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 20.0]
+    rotation: 0
+    state: true
+- name: analog_sig_source_x_0_0
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: 433e6
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: 1e9
+    showports: 'False'
+    type: float
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 572.0]
+    rotation: 0
+    state: true
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1056, 176.0]
+    rotation: 0
+    state: true
+- name: blocks_complex_to_float_0
+  id: blocks_complex_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [768, 496.0]
+    rotation: 0
+    state: true
+- name: blocks_delay_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: '59'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    showports: 'False'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1104, 372.0]
+    rotation: 0
+    state: enabled
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 496.0]
+    rotation: 0
+    state: true
+- name: blocks_float_to_uchar_0
+  id: blocks_float_to_uchar
+  parameters:
+    affinity: ''
+    alias: ''
+    bias: '0'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1616, 496.0]
+    rotation: 0
+    state: true
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '-1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [872, 244.0]
+    rotation: 0
+    state: true
+- name: blocks_multiply_const_vxx_0_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [944, 492.0]
+    rotation: 0
+    state: true
+- name: blocks_multiply_xx_0
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1240, 152.0]
+    rotation: 0
+    state: true
+- name: blocks_multiply_xx_0_0
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [280, 480.0]
+    rotation: 0
+    state: true
+- name: blocks_repeat_0
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: '15'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 180.0]
+    rotation: 0
+    state: true
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [432, 172.0]
+    rotation: 0
+    state: enabled
+- name: blocks_uchar_to_float_0
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1400, 392.0]
+    rotation: 0
+    state: enabled
+- name: blocks_uchar_to_float_1
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [712, 248.0]
+    rotation: 0
+    state: true
+- name: blocks_uchar_to_float_1_0
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [712, 184.0]
+    rotation: 0
+    state: true
+- name: blocks_uchar_to_float_2
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1264, 496.0]
+    rotation: 0
+    state: true
+- name: blocks_xor_xx_0
+  id: blocks_xor_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [624, 232.0]
+    rotation: 0
+    state: true
+- name: blocks_xor_xx_1
+  id: blocks_xor_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 376.0]
+    rotation: 0
+    state: enabled
+- name: digital_binary_slicer_fb_0
+  id: digital_binary_slicer_fb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1112, 496.0]
+    rotation: 0
+    state: true
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "import os, csv, cv2, numpy as np\nfrom pathlib import Path\nfrom\
+      \ gnuradio import gr\n\nclass bits2dataset(gr.basic_block):\n    \"\"\"\n  \
+      \  Reconstruye placas 45\xD730 desde un flujo de bits, las muestra y crea\n\
+      \    un dataset en disco + CSV donde se guarda *cada r\xE9plica*.\n\n    CSV\
+      \ final:\n        imagen,bits\n        dataset_rx/autos/auto001_rep01.png,dataset_rx/autos_bits/auto001_rep01.npy\n\
+      \        dataset_rx/autos/auto001_rep02.png,dataset_rx/autos_bits/auto001_rep02.npy\n\
+      \        ...\n\n    Par\xE1metros\n    ----------\n    out_root : str   Carpeta\
+      \ destino del dataset.\n    n_images : int  Cantidad de autos distintos (182).\n\
+      \    repeats  : int  R\xE9plicas por auto (10).\n    width,height :  dimensiones\
+      \ (45\xD730).\n    show : bool     Mostrar ventana OpenCV.\n    \"\"\"\n\n \
+      \   def __init__(self,\n                 out_root=\"./dataset_rx\",\n      \
+      \           n_images=182,\n                 repeats=10,\n                 width=45,\n\
+      \                 height=30,\n                 show=True):\n\n        super().__init__(name=\"\
+      bits2dataset\", in_sig=[np.uint8], out_sig=None)\n\n        # ---- ajustes b\xE1\
+      sicos ----\n        self.width  = int(width)\n        self.height = int(height)\n\
+      \        self.show   = bool(show)\n\n        # ---- cabecera + longitudes ----\n\
+      \        self.expected = self.width * self.height\n        self.header   = np.array([1,1,1,0,1,0,1,0,1],\
+      \ dtype=np.uint8)\n        self.buffer   = np.empty(0, dtype=np.uint8)\n\n \
+      \       # ---- control de secuencia ----\n        self.n_images     = int(n_images)\n\
+      \        self.repeats      = int(repeats)\n        self.cur_img_idx  = 1   \
+      \      # auto actual (1..n_images)\n        self.repeat_left  = self.repeats\n\
+      \        self.rep_no       = 1         # r\xE9plica actual (1..repeats)\n\n\
+      \        # ---- rutas ----\n        self.root      = Path(out_root)\n      \
+      \  self.dir_img   = self.root / \"autos\"\n        self.dir_bits  = self.root\
+      \ / \"autos_bits\"\n        self.csv_path  = self.root / \"dataset_rx_index.csv\"\
+      \n\n        for d in (self.dir_img, self.dir_bits):\n            d.mkdir(parents=True,\
+      \ exist_ok=True)\n        if not self.csv_path.exists():\n            with self.csv_path.open(\"\
+      w\", newline=\"\") as f:\n                csv.writer(f).writerow([\"imagen\"\
+      , \"bits\"])\n\n    # -----------------------------------------------------------------\
+      \ #\n    def general_work(self, in_items, out_items):\n        data = in_items[0]\n\
+      \        if len(data) == 0:\n            return 0\n        self.buffer = np.append(self.buffer,\
+      \ data)\n\n        while True:\n            limit = len(self.buffer) - len(self.header)\
+      \ - self.expected\n            if limit < 0:\n                break\n\n    \
+      \        found = False\n            for i in range(limit + 1):\n           \
+      \     if np.array_equal(self.buffer[i:i+len(self.header)], self.header):\n \
+      \                   start = i + len(self.header); end = start + self.expected\n\
+      \                    if len(self.buffer) >= end:\n                        frame\
+      \ = self.buffer[start:end]\n                        self.buffer = self.buffer[end:]\n\
+      \                        self._save_frame(frame)        # \u2B05\uFE0F guardar\
+      \ r\xE9plica\n                        found = True\n                       \
+      \ break\n                    else:\n                        break\n        \
+      \    if not found:\n                if len(self.buffer) > 10*(self.expected+len(self.header)):\n\
+      \                    self.buffer = self.buffer[-(self.expected+len(self.header)):]\n\
+      \                break\n\n        self.consume(0, len(data))\n        return\
+      \ 0\n\n    # -----------------------------------------------------------------\
+      \ #\n    def _save_frame(self, bits):\n        img = (1 - bits).astype(np.uint8).reshape(self.height,\
+      \ self.width)*255\n\n        if self.show:\n            cv2.imshow(\"RX placa\"\
+      , img)\n            cv2.waitKey(1)\n\n        # nombres con autoXXX_repYY\n\
+      \        stem = f\"auto{self.cur_img_idx:03d}_rep{self.rep_no:02d}\"\n     \
+      \   img_path  = self.dir_img  / f\"{stem}.png\"\n        bits_path = self.dir_bits\
+      \ / f\"{stem}.npy\"\n\n        cv2.imwrite(str(img_path), img)\n        np.save(bits_path,\
+      \ bits.astype(np.uint8))\n\n        with self.csv_path.open(\"a\", newline=\"\
+      \") as f:\n            csv.writer(f).writerow([str(img_path), str(bits_path)])\n\
+      \n        print(f\"\U0001F4C1 Guardado {stem}\")\n\n        # ---- actualizar\
+      \ contadores ----\n        self.repeat_left -= 1\n        self.rep_no      +=\
+      \ 1\n        if self.repeat_left == 0:\n            self.cur_img_idx += 1\n\
+      \            self.repeat_left  = self.repeats\n            self.rep_no     \
+      \  = 1\n            if self.cur_img_idx > self.n_images:\n                print(\"\
+      \u2705  Dataset completo.\")\n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    height: '40'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n_images: '182'
+    out_root: '"./dataset_rx"'
+    repeats: '10'
+    show: 'False'
+    width: '50'
+  states:
+    _io_cache: "('bits2dataset', 'bits2dataset', [('out_root', \"'./dataset_rx'\"\
+      ), ('n_images', '182'), ('repeats', '10'), ('width', '45'), ('height', '30'),\
+      \ ('show', 'True')], [('0', 'byte', 1)], [], '\\nReconstruye placas 45\xD730\
+      \ desde un flujo de bits, las muestra y crea\\nun dataset en disco + CSV donde\
+      \ se guarda *cada r\xE9plica*.\\n\\nCSV final:\\n    imagen,bits\\n    dataset_rx/autos/auto001_rep01.png,dataset_rx/autos_bits/auto001_rep01.npy\\\
+      n    dataset_rx/autos/auto001_rep02.png,dataset_rx/autos_bits/auto001_rep02.npy\\\
+      n    ...\\n\\nPar\xE1metros\\n----------\\nout_root : str   Carpeta destino\
+      \ del dataset.\\nn_images : int  Cantidad de autos distintos (182).\\nrepeats\
+      \  : int  R\xE9plicas por auto (10).\\nwidth,height :  dimensiones (45\xD730).\\\
+      nshow : bool     Mostrar ventana OpenCV.\\n', ['height', 'n_images', 'repeats',\
+      \ 'show', 'width'])"
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1800, 588.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_0_0
+  id: epy_block
+  parameters:
+    _source_code: "import os, glob, cv2, numpy as np\nfrom gnuradio import gr\nimport\
+      \ pmt\n\nclass img2bits(gr.basic_block):\n    \"\"\"\n    Transmite N im\xE1\
+      genes secuencialmente; cada una se repite `repeats` veces.\n\n    Parameters\n\
+      \    ----------\n    dir_path : str\n        Carpeta que contiene las im\xE1\
+      genes auto*.jpeg.\n    repeats : int\n        N\xFAmero de veces que se enviar\xE1\
+      \ cada imagen.\n    mode : {\"bits\", \"int\"}\n        Igual que en tu versi\xF3\
+      n original.\n    \"\"\"\n\n    def __init__(self,\n                 dir_path=\"\
+      /home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset/autos/\"\
+      ,\n                 repeats=10,\n                 mode=\"bits\"):\n        self.mode\
+      \    = mode.lower().strip()\n        self.repeats = int(repeats)\n\n       \
+      \ # \u2500\u2500 Obtener lista de archivos \u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        pattern = os.path.join(dir_path,\
+      \ \"auto*.jp*g\")  # acepta .jpeg o .jpg\n        self.files = sorted(glob.glob(pattern))\n\
+      \        if not self.files:\n            raise RuntimeError(f\"No se encontraron\
+      \ im\xE1genes con patr\xF3n {pattern}\")\n\n        # \u2500\u2500 Se\xF1ales\
+      \ de E/S \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n \
+      \       out_sig = [np.uint8] if self.mode == \"bits\" else None\n        gr.basic_block.__init__(self,\
+      \ name=\"img2bits_seq\",\n                                in_sig=None, out_sig=out_sig)\n\
+      \n        # \u2500\u2500 Cabecera fija \u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\n        self.header = np.array([1,1,1,0,1,0,1,0,1],\
+      \ dtype=np.uint8)\n\n        # \u2500\u2500 Estado interno \u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        self.file_idx   =\
+      \ 0          # \xEDndice en self.files\n        self.repeat_left = self.repeats\n\
+      \        self._load_payload()         # crea self.payload y self.packet_len\n\
+      \n        if self.mode == \"int\":\n            self.message_port_register_out(pmt.intern(\"\
+      out\"))\n\n    # -------------------------------------------------------------------\
+      \ #\n    #  UTILIDADES                                                     \
+      \    #\n    # -------------------------------------------------------------------\
+      \ #\n    def _extract_bits(self, path):\n        \"\"\"\n        Recorta la\
+      \ placa, binariza y devuelve un vector 0/1 de longitud fija.\n        (Mismo\
+      \ m\xE9todo que ten\xEDas, sin cambios funcionales).\n        \"\"\"\n     \
+      \   img = cv2.imread(path)\n        if img is None:\n            raise RuntimeError(f\"\
+      Imagen no encontrada: {path}\")\n\n        hsv  = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)\n\
+      \        mask = cv2.inRange(hsv, (20,100,100), (35,255,255))\n        mask =\
+      \ cv2.morphologyEx(mask, cv2.MORPH_CLOSE,\n                                cv2.getStructuringElement(cv2.MORPH_RECT,\
+      \ (5,5)))\n\n        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)\n\
+      \        plate, possible, area_max = None, None, 0\n        for c in cnts:\n\
+      \            x,y,w,h = cv2.boundingRect(c)\n            r, area = w/float(h),\
+      \ w*h\n            if 1.8 < r < 3.2 and w > 40:\n                plate = img[y:y+h,\
+      \ x:x+w]; break\n            elif area > area_max and w > 60:\n            \
+      \    possible, area_max = img[y:y+h, x:x+w], area\n        if plate is None\
+      \ and possible is not None:\n            plate = possible\n            print(f\"\
+      \u26A0\uFE0F  {os.path.basename(path)}: placa fuera de proporci\xF3n ideal\"\
+      )\n\n        if plate is None:\n            print(f\"No se detect\xF3 placa\
+      \ en {path}, rellenando...\")\n            return np.zeros(50 * 40, dtype=np.uint8)\n\
+      \n        plate = cv2.resize(plate, (50, 40))\n        gray  = cv2.cvtColor(plate,\
+      \ cv2.COLOR_BGR2GRAY)\n        _, bn = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY_INV)\n\
+      \        return (bn == 0).flatten().astype(np.uint8)\n\n    def _load_payload(self):\n\
+      \        \"\"\"Carga bits de la imagen actual y prepara self.payload / len.\"\
+      \"\"\n        actual_path   = self.files[self.file_idx]\n        img_bits  \
+      \    = self._extract_bits(actual_path)\n        self.payload  = np.concatenate((self.header,\
+      \ img_bits))\n        self.packet_len = len(self.payload)\n\n    def _advance_image(self):\n\
+      \        \"\"\"Pasa a la siguiente imagen y resetea el contador de repeticiones.\"\
+      \"\"\n        self.file_idx += 1\n        if self.file_idx >= len(self.files):\n\
+      \            self.file_idx = len(self.files)  # deja apuntando al final\n  \
+      \          return False                     # ya no hay m\xE1s im\xE1genes\n\
+      \        self.repeat_left = self.repeats\n        self._load_payload()\n   \
+      \     return True\n\n    # -------------------------------------------------------------------\
+      \ #\n    #  GNU RADIO                                                      \
+      \    #\n    # -------------------------------------------------------------------\
+      \ #\n    def general_work(self, in_items, out_items):\n        if self.mode\
+      \ != \"bits\":\n            return 0\n\n        out = out_items[0]\n       \
+      \ if len(out) < self.packet_len:\n            return 0  # el b\xFAfer a\xFA\
+      n no alcanza\n\n        # \u2500\u2500 Copiar paquete y etiquetar \u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        out[:self.packet_len] =\
+      \ self.payload\n        self.add_item_tag(0, self.nitems_written(0),\n     \
+      \                     pmt.intern(\"packet_len\"),\n                        \
+      \  pmt.from_long(self.packet_len))\n\n        # \u2500\u2500 \u2B07\uFE0F  mensaje\
+      \ de progreso  \u2B07\uFE0F \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\n        rep_no = self.repeats - self.repeat_left\
+      \ + 1          # 1..10\n        img_no = self.file_idx + 1                 \
+      \           # 1..182\n        print(f\"Imagen {img_no:03d} mandada {rep_no}\"\
+      )\n        # \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\n\n        # \u2500\u2500 Gestionar recuento y paso a la siguiente \u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\n        self.repeat_left -= 1\n      \
+      \  if self.repeat_left == 0:\n            if not self._advance_image():    \
+      \ # sin m\xE1s im\xE1genes\n                return -1                     #\
+      \ EOF \u2192 detener flujo\n\n        return self.packet_len\n\n    def start(self):\n\
+      \        \"\"\"En modo 'int' publica cada paquete en un puerto de mensajes.\"\
+      \"\"\n        if self.mode == \"int\":\n            packed = np.packbits(self.payload)\n\
+      \            value  = int.from_bytes(packed.tobytes(), \"big\")\n          \
+      \  msg = pmt.cons(pmt.PMT_NIL,\n                           pmt.from_uint64(value)\n\
+      \                           if value.bit_length() <= 64\n                  \
+      \         else pmt.init_u8vector(len(packed), packed))\n            self.message_port_pub(pmt.intern(\"\
+      out\"), msg)\n        return super().start()\n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    dir_path: '"/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto
+      final/dataset/autos/"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mode: '"bits"'
+    repeats: '10'
+  states:
+    _io_cache: "('img2bits_seq', 'img2bits', [('dir_path', \"'/home/jpalaciosch/Documents/UNAL/Septimo\
+      \ semestre/Comunicaciones/Proyecto final/dataset/autos/'\"), ('repeats', '10'),\
+      \ ('mode', \"'bits'\")], [], [('0', 'byte', 1)], '\\nTransmite N im\xE1genes\
+      \ secuencialmente; cada una se repite `repeats` veces.\\n\\nParameters\\n----------\\\
+      ndir_path : str\\n    Carpeta que contiene las im\xE1genes auto*.jpeg.\\nrepeats\
+      \ : int\\n    N\xFAmero de veces que se enviar\xE1 cada imagen.\\nmode : {\"\
+      bits\", \"int\"}\\n    Igual que en tu versi\xF3n original.\\n', ['mode', 'repeats'])"
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 204.0]
+    rotation: 0
+    state: true
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "#############################################################\n\
+      #  bits2img \u2013 reconstruye imagen 45\xD730 desde un paquete     #\n#  de\
+      \ bits (uchar 0/1) y la muestra con OpenCV              #\n#############################################################\n\
+      \nimport cv2\nimport numpy as np\nfrom gnuradio import gr\n\nclass blk(gr.basic_block):\n\
+      \    def __init__(self, width=45, height=30, show=True):\n        gr.basic_block.__init__(self,\n\
+      \            name=\"bits2img\",\n            in_sig=[np.uint8],\n          \
+      \  out_sig=None,\n        )\n        self.width = int(width)\n        self.height\
+      \ = int(height)\n        self.show = bool(show)\n\n        self.expected = self.width\
+      \ * self.height\n        self.header = np.array([1, 1, 1, 0, 1, 0, 1, 0, 1],\
+      \ dtype=np.uint8)\n        self.buffer = np.empty(0, dtype=np.uint8)\n\n   \
+      \ def general_work(self, in_items, out_items):\n        inp = in_items[0]\n\
+      \        nread = len(inp)\n\n        if nread == 0:\n            return 0\n\n\
+      \        self.buffer = np.append(self.buffer, inp)\n\n        while True:\n\
+      \            search_limit = len(self.buffer) - len(self.header) - self.expected\n\
+      \            if search_limit < 0:\n                break\n\n            found\
+      \ = False\n            for i in range(search_limit + 1):\n                if\
+      \ np.array_equal(self.buffer[i:i + len(self.header)], self.header):\n      \
+      \              start = i + len(self.header)\n                    end = start\
+      \ + self.expected\n                    if len(self.buffer) >= end:\n       \
+      \                 frame_bits = self.buffer[start:end]\n                    \
+      \    self.buffer = self.buffer[end:]  # quitar todo hasta fin del paquete\n\
+      \                        img = (1 - frame_bits).astype(np.uint8) * 255\n   \
+      \                     img = img.reshape(self.height, self.width)\n         \
+      \               if self.show:\n                            cv2.imshow(\"Imagen\
+      \ reconstruida\", img)\n                            cv2.waitKey(1)\n       \
+      \                 found = True\n                        break\n            \
+      \        else:\n                        break  # esperar m\xE1s datos\n\n  \
+      \          if not found:\n                # No encontramos header v\xE1lido:\
+      \ eliminar parte frontal para evitar overflow\n                if len(self.buffer)\
+      \ > 10 * (self.expected + len(self.header)):\n                    self.buffer\
+      \ = self.buffer[-(self.expected + len(self.header)):]\n                break\n\
+      \n        self.consume(0, nread)\n        return 0\n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    height: '40'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    show: 'True'
+    width: '50'
+  states:
+    _io_cache: ('bits2img', 'blk', [('width', '45'), ('height', '30'), ('show', 'True')],
+      [('0', 'byte', 1)], [], '', ['height', 'show', 'width'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1808, 484.0]
+    rotation: 0
+    state: true
+- name: low_pass_filter_0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: 8e3
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: 2e3
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [584, 460.0]
+    rotation: 0
+    state: true
+- name: qtgui_sink_x_0
+  id: qtgui_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: samp_rate
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    gui_hint: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    plotconst: 'True'
+    plotfreq: 'True'
+    plottime: 'True'
+    plotwaterfall: 'True'
+    rate: '10'
+    showports: 'False'
+    showrf: 'False'
+    type: float
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1424, 60.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Error"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1560, 364.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_5
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"FINAL"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1424, 596.0]
+    rotation: 0
+    state: true
+- name: rational_resampler_xxx_0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '15'
+    fbw: '0'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1432, 468.0]
+    rotation: 0
+    state: true
+- name: virtual_sink_0
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: placa
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1440, 268.0]
+    rotation: 0
+    state: true
+- name: virtual_sink_1
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: throttle
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [592, 124.0]
+    rotation: 0
+    state: enabled
+- name: virtual_source_0
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: placa
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 476.0]
+    rotation: 0
+    state: true
+- name: virtual_source_1
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: throttle
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [952, 372.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_const_source_x_0, '0', blocks_xor_xx_0, '1']
+- [analog_sig_source_x_0, '0', blocks_multiply_xx_0, '0']
+- [analog_sig_source_x_0_0, '0', blocks_multiply_xx_0_0, '1']
+- [blocks_add_xx_0, '0', blocks_multiply_xx_0, '1']
+- [blocks_complex_to_float_0, '0', blocks_multiply_const_vxx_0_0, '0']
+- [blocks_delay_0, '0', blocks_xor_xx_1, '0']
+- [blocks_float_to_complex_0, '0', low_pass_filter_0, '0']
+- [blocks_float_to_uchar_0, '0', epy_block_0, '0']
+- [blocks_float_to_uchar_0, '0', epy_block_1, '0']
+- [blocks_multiply_const_vxx_0, '0', blocks_add_xx_0, '1']
+- [blocks_multiply_const_vxx_0_0, '0', digital_binary_slicer_fb_0, '0']
+- [blocks_multiply_xx_0, '0', qtgui_sink_x_0, '0']
+- [blocks_multiply_xx_0, '0', virtual_sink_0, '0']
+- [blocks_multiply_xx_0_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_repeat_0, '0', blocks_throttle2_0, '0']
+- [blocks_throttle2_0, '0', blocks_uchar_to_float_1_0, '0']
+- [blocks_throttle2_0, '0', blocks_xor_xx_0, '0']
+- [blocks_throttle2_0, '0', virtual_sink_1, '0']
+- [blocks_uchar_to_float_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_uchar_to_float_1, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_uchar_to_float_1_0, '0', blocks_add_xx_0, '0']
+- [blocks_uchar_to_float_2, '0', qtgui_time_sink_x_5, '0']
+- [blocks_uchar_to_float_2, '0', rational_resampler_xxx_0, '0']
+- [blocks_xor_xx_0, '0', blocks_uchar_to_float_1, '0']
+- [blocks_xor_xx_1, '0', blocks_uchar_to_float_0, '0']
+- [digital_binary_slicer_fb_0, '0', blocks_uchar_to_float_2, '0']
+- [digital_binary_slicer_fb_0, '0', blocks_xor_xx_1, '1']
+- [epy_block_0_0, '0', blocks_repeat_0, '0']
+- [low_pass_filter_0, '0', blocks_complex_to_float_0, '0']
+- [rational_resampler_xxx_0, '0', blocks_float_to_uchar_0, '0']
+- [virtual_source_0, '0', blocks_multiply_xx_0_0, '0']
+- [virtual_source_1, '0', blocks_delay_0, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0
