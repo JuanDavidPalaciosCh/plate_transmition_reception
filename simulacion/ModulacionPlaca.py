@@ -24,7 +24,6 @@ from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-import ModulacionPlaca_epy_block_0 as epy_block_0  # embedded python block
 import ModulacionPlaca_epy_block_0_0 as epy_block_0_0  # embedded python block
 import ModulacionPlaca_epy_block_1 as epy_block_1  # embedded python block
 import sip
@@ -202,9 +201,8 @@ class ModulacionPlaca(gr.top_block, Qt.QWidget):
                 2e3,
                 window.WIN_HAMMING,
                 6.76))
-        self.epy_block_1 = epy_block_1.blk(width=50, height=40, show=True)
-        self.epy_block_0_0 = epy_block_0_0.img2bits(dir_path="/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset/autos/", repeats=10, mode="bits")
-        self.epy_block_0 = epy_block_0.bits2dataset(out_root="./dataset_rx", n_images=182, repeats=10, width=50, height=40, show=False)
+        self.epy_block_1 = epy_block_1.bits2img_id_csv(width=50, height=40, out_root="./dataset_rx_yolo", show=True)
+        self.epy_block_0_0 = epy_block_0_0.csv_bits_src(csv_path="/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset_yolo/dataset_yolo.csv", repeats=2)
         self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
         self.blocks_xor_xx_1 = blocks.xor_bb()
         self.blocks_xor_xx_0 = blocks.xor_bb()
@@ -238,7 +236,6 @@ class ModulacionPlaca(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_complex_to_float_0, 0), (self.blocks_multiply_const_vxx_0_0, 0))
         self.connect((self.blocks_delay_0, 0), (self.blocks_xor_xx_1, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.low_pass_filter_0, 0))
-        self.connect((self.blocks_float_to_uchar_0, 0), (self.epy_block_0, 0))
         self.connect((self.blocks_float_to_uchar_0, 0), (self.epy_block_1, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_add_xx_0, 1))
         self.connect((self.blocks_multiply_const_vxx_0_0, 0), (self.digital_binary_slicer_fb_0, 0))

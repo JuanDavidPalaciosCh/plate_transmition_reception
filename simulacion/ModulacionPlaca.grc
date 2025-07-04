@@ -416,221 +416,67 @@ blocks:
     coordinate: [1112, 496.0]
     rotation: 0
     state: true
-- name: epy_block_0
-  id: epy_block
-  parameters:
-    _source_code: "import os, csv, cv2, numpy as np\nfrom pathlib import Path\nfrom\
-      \ gnuradio import gr\n\nclass bits2dataset(gr.basic_block):\n    \"\"\"\n  \
-      \  Reconstruye placas 45\xD730 desde un flujo de bits, las muestra y crea\n\
-      \    un dataset en disco + CSV donde se guarda *cada r\xE9plica*.\n\n    CSV\
-      \ final:\n        imagen,bits\n        dataset_rx/autos/auto001_rep01.png,dataset_rx/autos_bits/auto001_rep01.npy\n\
-      \        dataset_rx/autos/auto001_rep02.png,dataset_rx/autos_bits/auto001_rep02.npy\n\
-      \        ...\n\n    Par\xE1metros\n    ----------\n    out_root : str   Carpeta\
-      \ destino del dataset.\n    n_images : int  Cantidad de autos distintos (182).\n\
-      \    repeats  : int  R\xE9plicas por auto (10).\n    width,height :  dimensiones\
-      \ (45\xD730).\n    show : bool     Mostrar ventana OpenCV.\n    \"\"\"\n\n \
-      \   def __init__(self,\n                 out_root=\"./dataset_rx\",\n      \
-      \           n_images=182,\n                 repeats=10,\n                 width=45,\n\
-      \                 height=30,\n                 show=True):\n\n        super().__init__(name=\"\
-      bits2dataset\", in_sig=[np.uint8], out_sig=None)\n\n        # ---- ajustes b\xE1\
-      sicos ----\n        self.width  = int(width)\n        self.height = int(height)\n\
-      \        self.show   = bool(show)\n\n        # ---- cabecera + longitudes ----\n\
-      \        self.expected = self.width * self.height\n        self.header   = np.array([1,1,1,0,1,0,1,0,1],\
-      \ dtype=np.uint8)\n        self.buffer   = np.empty(0, dtype=np.uint8)\n\n \
-      \       # ---- control de secuencia ----\n        self.n_images     = int(n_images)\n\
-      \        self.repeats      = int(repeats)\n        self.cur_img_idx  = 1   \
-      \      # auto actual (1..n_images)\n        self.repeat_left  = self.repeats\n\
-      \        self.rep_no       = 1         # r\xE9plica actual (1..repeats)\n\n\
-      \        # ---- rutas ----\n        self.root      = Path(out_root)\n      \
-      \  self.dir_img   = self.root / \"autos\"\n        self.dir_bits  = self.root\
-      \ / \"autos_bits\"\n        self.csv_path  = self.root / \"dataset_rx_index.csv\"\
-      \n\n        for d in (self.dir_img, self.dir_bits):\n            d.mkdir(parents=True,\
-      \ exist_ok=True)\n        if not self.csv_path.exists():\n            with self.csv_path.open(\"\
-      w\", newline=\"\") as f:\n                csv.writer(f).writerow([\"imagen\"\
-      , \"bits\"])\n\n    # -----------------------------------------------------------------\
-      \ #\n    def general_work(self, in_items, out_items):\n        data = in_items[0]\n\
-      \        if len(data) == 0:\n            return 0\n        self.buffer = np.append(self.buffer,\
-      \ data)\n\n        while True:\n            limit = len(self.buffer) - len(self.header)\
-      \ - self.expected\n            if limit < 0:\n                break\n\n    \
-      \        found = False\n            for i in range(limit + 1):\n           \
-      \     if np.array_equal(self.buffer[i:i+len(self.header)], self.header):\n \
-      \                   start = i + len(self.header); end = start + self.expected\n\
-      \                    if len(self.buffer) >= end:\n                        frame\
-      \ = self.buffer[start:end]\n                        self.buffer = self.buffer[end:]\n\
-      \                        self._save_frame(frame)        # \u2B05\uFE0F guardar\
-      \ r\xE9plica\n                        found = True\n                       \
-      \ break\n                    else:\n                        break\n        \
-      \    if not found:\n                if len(self.buffer) > 10*(self.expected+len(self.header)):\n\
-      \                    self.buffer = self.buffer[-(self.expected+len(self.header)):]\n\
-      \                break\n\n        self.consume(0, len(data))\n        return\
-      \ 0\n\n    # -----------------------------------------------------------------\
-      \ #\n    def _save_frame(self, bits):\n        img = (1 - bits).astype(np.uint8).reshape(self.height,\
-      \ self.width)*255\n\n        if self.show:\n            cv2.imshow(\"RX placa\"\
-      , img)\n            cv2.waitKey(1)\n\n        # nombres con autoXXX_repYY\n\
-      \        stem = f\"auto{self.cur_img_idx:03d}_rep{self.rep_no:02d}\"\n     \
-      \   img_path  = self.dir_img  / f\"{stem}.png\"\n        bits_path = self.dir_bits\
-      \ / f\"{stem}.npy\"\n\n        cv2.imwrite(str(img_path), img)\n        np.save(bits_path,\
-      \ bits.astype(np.uint8))\n\n        with self.csv_path.open(\"a\", newline=\"\
-      \") as f:\n            csv.writer(f).writerow([str(img_path), str(bits_path)])\n\
-      \n        print(f\"\U0001F4C1 Guardado {stem}\")\n\n        # ---- actualizar\
-      \ contadores ----\n        self.repeat_left -= 1\n        self.rep_no      +=\
-      \ 1\n        if self.repeat_left == 0:\n            self.cur_img_idx += 1\n\
-      \            self.repeat_left  = self.repeats\n            self.rep_no     \
-      \  = 1\n            if self.cur_img_idx > self.n_images:\n                print(\"\
-      \u2705  Dataset completo.\")\n\n"
-    affinity: ''
-    alias: ''
-    comment: ''
-    height: '40'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    n_images: '182'
-    out_root: '"./dataset_rx"'
-    repeats: '10'
-    show: 'False'
-    width: '50'
-  states:
-    _io_cache: "('bits2dataset', 'bits2dataset', [('out_root', \"'./dataset_rx'\"\
-      ), ('n_images', '182'), ('repeats', '10'), ('width', '45'), ('height', '30'),\
-      \ ('show', 'True')], [('0', 'byte', 1)], [], '\\nReconstruye placas 45\xD730\
-      \ desde un flujo de bits, las muestra y crea\\nun dataset en disco + CSV donde\
-      \ se guarda *cada r\xE9plica*.\\n\\nCSV final:\\n    imagen,bits\\n    dataset_rx/autos/auto001_rep01.png,dataset_rx/autos_bits/auto001_rep01.npy\\\
-      n    dataset_rx/autos/auto001_rep02.png,dataset_rx/autos_bits/auto001_rep02.npy\\\
-      n    ...\\n\\nPar\xE1metros\\n----------\\nout_root : str   Carpeta destino\
-      \ del dataset.\\nn_images : int  Cantidad de autos distintos (182).\\nrepeats\
-      \  : int  R\xE9plicas por auto (10).\\nwidth,height :  dimensiones (45\xD730).\\\
-      nshow : bool     Mostrar ventana OpenCV.\\n', ['height', 'n_images', 'repeats',\
-      \ 'show', 'width'])"
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1800, 588.0]
-    rotation: 0
-    state: enabled
 - name: epy_block_0_0
   id: epy_block
   parameters:
-    _source_code: "import os, glob, cv2, numpy as np\nfrom gnuradio import gr\nimport\
-      \ pmt\n\nclass img2bits(gr.basic_block):\n    \"\"\"\n    Transmite N im\xE1\
-      genes secuencialmente; cada una se repite `repeats` veces.\n\n    Parameters\n\
-      \    ----------\n    dir_path : str\n        Carpeta que contiene las im\xE1\
-      genes auto*.jpeg.\n    repeats : int\n        N\xFAmero de veces que se enviar\xE1\
-      \ cada imagen.\n    mode : {\"bits\", \"int\"}\n        Igual que en tu versi\xF3\
-      n original.\n    \"\"\"\n\n    def __init__(self,\n                 dir_path=\"\
-      /home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset/autos/\"\
-      ,\n                 repeats=10,\n                 mode=\"bits\"):\n        self.mode\
-      \    = mode.lower().strip()\n        self.repeats = int(repeats)\n\n       \
-      \ # \u2500\u2500 Obtener lista de archivos \u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        pattern = os.path.join(dir_path,\
-      \ \"auto*.jp*g\")  # acepta .jpeg o .jpg\n        self.files = sorted(glob.glob(pattern))\n\
-      \        if not self.files:\n            raise RuntimeError(f\"No se encontraron\
-      \ im\xE1genes con patr\xF3n {pattern}\")\n\n        # \u2500\u2500 Se\xF1ales\
-      \ de E/S \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n \
-      \       out_sig = [np.uint8] if self.mode == \"bits\" else None\n        gr.basic_block.__init__(self,\
-      \ name=\"img2bits_seq\",\n                                in_sig=None, out_sig=out_sig)\n\
-      \n        # \u2500\u2500 Cabecera fija \u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\n        self.header = np.array([1,1,1,0,1,0,1,0,1],\
-      \ dtype=np.uint8)\n\n        # \u2500\u2500 Estado interno \u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        self.file_idx   =\
-      \ 0          # \xEDndice en self.files\n        self.repeat_left = self.repeats\n\
-      \        self._load_payload()         # crea self.payload y self.packet_len\n\
-      \n        if self.mode == \"int\":\n            self.message_port_register_out(pmt.intern(\"\
-      out\"))\n\n    # -------------------------------------------------------------------\
-      \ #\n    #  UTILIDADES                                                     \
-      \    #\n    # -------------------------------------------------------------------\
-      \ #\n    def _extract_bits(self, path):\n        \"\"\"\n        Recorta la\
-      \ placa, binariza y devuelve un vector 0/1 de longitud fija.\n        (Mismo\
-      \ m\xE9todo que ten\xEDas, sin cambios funcionales).\n        \"\"\"\n     \
-      \   img = cv2.imread(path)\n        if img is None:\n            raise RuntimeError(f\"\
-      Imagen no encontrada: {path}\")\n\n        hsv  = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)\n\
-      \        mask = cv2.inRange(hsv, (20,100,100), (35,255,255))\n        mask =\
-      \ cv2.morphologyEx(mask, cv2.MORPH_CLOSE,\n                                cv2.getStructuringElement(cv2.MORPH_RECT,\
-      \ (5,5)))\n\n        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)\n\
-      \        plate, possible, area_max = None, None, 0\n        for c in cnts:\n\
-      \            x,y,w,h = cv2.boundingRect(c)\n            r, area = w/float(h),\
-      \ w*h\n            if 1.8 < r < 3.2 and w > 40:\n                plate = img[y:y+h,\
-      \ x:x+w]; break\n            elif area > area_max and w > 60:\n            \
-      \    possible, area_max = img[y:y+h, x:x+w], area\n        if plate is None\
-      \ and possible is not None:\n            plate = possible\n            print(f\"\
-      \u26A0\uFE0F  {os.path.basename(path)}: placa fuera de proporci\xF3n ideal\"\
-      )\n\n        if plate is None:\n            print(f\"No se detect\xF3 placa\
-      \ en {path}, rellenando...\")\n            return np.zeros(50 * 40, dtype=np.uint8)\n\
-      \n        plate = cv2.resize(plate, (50, 40))\n        gray  = cv2.cvtColor(plate,\
-      \ cv2.COLOR_BGR2GRAY)\n        _, bn = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY_INV)\n\
-      \        return (bn == 0).flatten().astype(np.uint8)\n\n    def _load_payload(self):\n\
-      \        \"\"\"Carga bits de la imagen actual y prepara self.payload / len.\"\
-      \"\"\n        actual_path   = self.files[self.file_idx]\n        img_bits  \
-      \    = self._extract_bits(actual_path)\n        self.payload  = np.concatenate((self.header,\
-      \ img_bits))\n        self.packet_len = len(self.payload)\n\n    def _advance_image(self):\n\
-      \        \"\"\"Pasa a la siguiente imagen y resetea el contador de repeticiones.\"\
-      \"\"\n        self.file_idx += 1\n        if self.file_idx >= len(self.files):\n\
-      \            self.file_idx = len(self.files)  # deja apuntando al final\n  \
-      \          return False                     # ya no hay m\xE1s im\xE1genes\n\
-      \        self.repeat_left = self.repeats\n        self._load_payload()\n   \
-      \     return True\n\n    # -------------------------------------------------------------------\
-      \ #\n    #  GNU RADIO                                                      \
-      \    #\n    # -------------------------------------------------------------------\
-      \ #\n    def general_work(self, in_items, out_items):\n        if self.mode\
-      \ != \"bits\":\n            return 0\n\n        out = out_items[0]\n       \
-      \ if len(out) < self.packet_len:\n            return 0  # el b\xFAfer a\xFA\
-      n no alcanza\n\n        # \u2500\u2500 Copiar paquete y etiquetar \u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        out[:self.packet_len] =\
-      \ self.payload\n        self.add_item_tag(0, self.nitems_written(0),\n     \
-      \                     pmt.intern(\"packet_len\"),\n                        \
-      \  pmt.from_long(self.packet_len))\n\n        # \u2500\u2500 \u2B07\uFE0F  mensaje\
-      \ de progreso  \u2B07\uFE0F \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\n        rep_no = self.repeats - self.repeat_left\
-      \ + 1          # 1..10\n        img_no = self.file_idx + 1                 \
-      \           # 1..182\n        print(f\"Imagen {img_no:03d} mandada {rep_no}\"\
-      )\n        # \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\n\n        # \u2500\u2500 Gestionar recuento y paso a la siguiente \u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\n        self.repeat_left -= 1\n      \
-      \  if self.repeat_left == 0:\n            if not self._advance_image():    \
-      \ # sin m\xE1s im\xE1genes\n                return -1                     #\
-      \ EOF \u2192 detener flujo\n\n        return self.packet_len\n\n    def start(self):\n\
-      \        \"\"\"En modo 'int' publica cada paquete en un puerto de mensajes.\"\
-      \"\"\n        if self.mode == \"int\":\n            packed = np.packbits(self.payload)\n\
-      \            value  = int.from_bytes(packed.tobytes(), \"big\")\n          \
-      \  msg = pmt.cons(pmt.PMT_NIL,\n                           pmt.from_uint64(value)\n\
-      \                           if value.bit_length() <= 64\n                  \
-      \         else pmt.init_u8vector(len(packed), packed))\n            self.message_port_pub(pmt.intern(\"\
-      out\"), msg)\n        return super().start()\n\n"
+    _source_code: "############################################################\n\
+      #   csv_bits_src.py  \u2013  con ID del auto in\u2011band + tag       #\n############################################################\n\
+      import csv, ast, numpy as np, pmt\nfrom gnuradio import gr\n\nclass csv_bits_src(gr.basic_block):\n\
+      \n    def __init__(self,\n                 csv_path=\"/home/jpalaciosch/Documents/UNAL/Septimo\
+      \ semestre/Comunicaciones/Proyecto final/dataset_yolo/dataset_yolo.csv\",\n\
+      \                 repeats=10):\n\n        # ---- par\xE1metros generales ----\n\
+      \        self.repeats = int(repeats)\n        self.header  = np.array([1,1,1,0,1,0,1,0,1],\
+      \ dtype=np.uint8)\n\n        # ---- cargar CSV -------------------------------------------------\n\
+      \        self.bits_list = []   # [(id, bits), ...]\n        with open(csv_path,\
+      \ newline=\"\") as f:\n            rdr = csv.DictReader(f)\n            for\
+      \ row in rdr:\n                bits = np.array(ast.literal_eval(row[\"bits\"\
+      ]), dtype=np.uint8)\n                if bits.size != 2000:\n               \
+      \     print(f\"\u26A0\uFE0F  fila {row['num_auto']} tama\xF1o {bits.size}\"\
+      )\n                    continue\n                car_id = int(row[\"num_auto\"\
+      ])  # 1..182\n                if not (0 < car_id < 256):\n                 \
+      \   print(f\"\u26A0\uFE0F  ID {car_id} fuera de rango 1\u2011255\")\n      \
+      \              continue\n                self.bits_list.append((car_id, bits))\n\
+      \n        if not self.bits_list:\n            raise RuntimeError(\"CSV sin bit\u2011\
+      arrays v\xE1lidos.\")\n\n        # ---- estado interno --------------------------------------------\n\
+      \        self.row_idx     = 0\n        self.repeat_left = self.repeats\n   \
+      \     self._build_payload()\n\n        gr.basic_block.__init__(self, name=\"\
+      csv_bits_src\",\n                                in_sig=None, out_sig=[np.uint8])\n\
+      \n    # ------------------------------------------------------------------ #\n\
+      \    def _build_payload(self):\n        car_id, bits = self.bits_list[self.row_idx]\n\
+      \n        # 1 byte con el ID (uint8)\n        id_byte   = np.array([car_id],\
+      \ dtype=np.uint8).view(np.uint8)\n        # convertir byte\u2192bits (8\_bits\
+      \ MSB primero)\n        id_bits   = np.unpackbits(id_byte)\n\n        self.payload\
+      \    = np.concatenate((self.header, id_bits, bits))\n        self.packet_len\
+      \ = len(self.payload)\n        self.cur_id     = car_id  # guarda para etiquetar\n\
+      \n    def _next_row(self):\n        self.row_idx += 1\n        if self.row_idx\
+      \ >= len(self.bits_list):\n            return False\n        self.repeat_left\
+      \ = self.repeats\n        self._build_payload()\n        return True\n\n   \
+      \ # ------------------------------------------------------------------ #\n \
+      \   def general_work(self, in_items, out_items):\n        out = out_items[0]\n\
+      \        if len(out) < self.packet_len:\n            return 0\n\n        out[:self.packet_len]\
+      \ = self.payload\n\n        # tag con longitud y con ID (opcional pero \xFA\
+      til)\n        offset = self.nitems_written(0)\n        self.add_item_tag(0,\
+      \ offset,\n                          pmt.intern(\"packet_len\"),\n         \
+      \                 pmt.from_long(self.packet_len))\n        self.add_item_tag(0,\
+      \ offset,\n                          pmt.intern(\"car_id\"),\n             \
+      \             pmt.from_long(self.cur_id))\n\n        # mensaje de progreso\n\
+      \        rep_idx = self.repeats - self.repeat_left + 1\n        print(f\"Auto\
+      \ {self.cur_id:03d}  r\xE9plica {rep_idx}\")\n\n        # administraci\xF3n\
+      \ de repeticiones\n        self.repeat_left -= 1\n        if self.repeat_left\
+      \ == 0:\n            if not self._next_row():\n                return -1\n \
+      \       return self.packet_len\n\n"
     affinity: ''
     alias: ''
     comment: ''
-    dir_path: '"/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto
-      final/dataset/autos/"'
+    csv_path: '"/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto
+      final/dataset_yolo/dataset_yolo.csv"'
     maxoutbuf: '0'
     minoutbuf: '0'
-    mode: '"bits"'
-    repeats: '10'
+    repeats: '2'
   states:
-    _io_cache: "('img2bits_seq', 'img2bits', [('dir_path', \"'/home/jpalaciosch/Documents/UNAL/Septimo\
-      \ semestre/Comunicaciones/Proyecto final/dataset/autos/'\"), ('repeats', '10'),\
-      \ ('mode', \"'bits'\")], [], [('0', 'byte', 1)], '\\nTransmite N im\xE1genes\
-      \ secuencialmente; cada una se repite `repeats` veces.\\n\\nParameters\\n----------\\\
-      ndir_path : str\\n    Carpeta que contiene las im\xE1genes auto*.jpeg.\\nrepeats\
-      \ : int\\n    N\xFAmero de veces que se enviar\xE1 cada imagen.\\nmode : {\"\
-      bits\", \"int\"}\\n    Igual que en tu versi\xF3n original.\\n', ['mode', 'repeats'])"
+    _io_cache: ('csv_bits_src', 'csv_bits_src', [('csv_path', "'/home/jpalaciosch/Documents/UNAL/Septimo
+      semestre/Comunicaciones/Proyecto final/dataset_yolo/dataset_yolo.csv'"), ('repeats',
+      '10')], [], [('0', 'byte', 1)], '', ['repeats'])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -641,48 +487,75 @@ blocks:
   id: epy_block
   parameters:
     _source_code: "#############################################################\n\
-      #  bits2img \u2013 reconstruye imagen 45\xD730 desde un paquete     #\n#  de\
-      \ bits (uchar 0/1) y la muestra con OpenCV              #\n#############################################################\n\
-      \nimport cv2\nimport numpy as np\nfrom gnuradio import gr\n\nclass blk(gr.basic_block):\n\
-      \    def __init__(self, width=45, height=30, show=True):\n        gr.basic_block.__init__(self,\n\
-      \            name=\"bits2img\",\n            in_sig=[np.uint8],\n          \
-      \  out_sig=None,\n        )\n        self.width = int(width)\n        self.height\
-      \ = int(height)\n        self.show = bool(show)\n\n        self.expected = self.width\
-      \ * self.height\n        self.header = np.array([1, 1, 1, 0, 1, 0, 1, 0, 1],\
-      \ dtype=np.uint8)\n        self.buffer = np.empty(0, dtype=np.uint8)\n\n   \
-      \ def general_work(self, in_items, out_items):\n        inp = in_items[0]\n\
-      \        nread = len(inp)\n\n        if nread == 0:\n            return 0\n\n\
-      \        self.buffer = np.append(self.buffer, inp)\n\n        while True:\n\
-      \            search_limit = len(self.buffer) - len(self.header) - self.expected\n\
-      \            if search_limit < 0:\n                break\n\n            found\
-      \ = False\n            for i in range(search_limit + 1):\n                if\
-      \ np.array_equal(self.buffer[i:i + len(self.header)], self.header):\n      \
-      \              start = i + len(self.header)\n                    end = start\
-      \ + self.expected\n                    if len(self.buffer) >= end:\n       \
-      \                 frame_bits = self.buffer[start:end]\n                    \
-      \    self.buffer = self.buffer[end:]  # quitar todo hasta fin del paquete\n\
-      \                        img = (1 - frame_bits).astype(np.uint8) * 255\n   \
-      \                     img = img.reshape(self.height, self.width)\n         \
-      \               if self.show:\n                            cv2.imshow(\"Imagen\
-      \ reconstruida\", img)\n                            cv2.waitKey(1)\n       \
-      \                 found = True\n                        break\n            \
-      \        else:\n                        break  # esperar m\xE1s datos\n\n  \
-      \          if not found:\n                # No encontramos header v\xE1lido:\
-      \ eliminar parte frontal para evitar overflow\n                if len(self.buffer)\
-      \ > 10 * (self.expected + len(self.header)):\n                    self.buffer\
-      \ = self.buffer[-(self.expected + len(self.header)):]\n                break\n\
-      \n        self.consume(0, nread)\n        return 0\n\n"
+      # bits2img_id_csv \u2013 RX con dataset y CSV                    #\n#############################################################\n\
+      \nimport cv2, csv, numpy as np\nfrom pathlib import Path\nfrom gnuradio import\
+      \ gr\n\nclass bits2img_id_csv(gr.basic_block):\n    def __init__(self,\n   \
+      \              width=50,\n                 height=40,\n                 out_root=\"\
+      ./dataset_rx_yolo\",\n                 show=True):\n\n        super().__init__(name=\"\
+      bits2img_id_csv\",\n                         in_sig=[np.uint8],\n          \
+      \               out_sig=None)\n\n        # --- imagen / cabecera ---\n     \
+      \   self.w = int(width)\n        self.h = int(height)\n        self.expected\
+      \ = self.w * self.h\n        self.header   = np.array([1,1,1,0,1,0,1,0,1], dtype=np.uint8)\n\
+      \        self.id_len   = 8\n        self.buffer   = np.empty(0, dtype=np.uint8)\n\
+      \        self.show     = bool(show)\n\n        # --- dataset en disco -----\n\
+      \        self.root     = Path(out_root)\n        self.dir_img  = self.root /\
+      \ \"autos_bw\"\n        self.dir_bits = self.root / \"autos_bits\"\n       \
+      \ self.csv_path = self.root / \"dataset_rx.csv\"\n\n        for d in (self.dir_img,\
+      \ self.dir_bits):\n            d.mkdir(parents=True, exist_ok=True)\n      \
+      \  if not self.csv_path.exists():\n            with self.csv_path.open(\"w\"\
+      , newline=\"\") as f:\n                csv.writer(f).writerow([\"num_auto\"\
+      , \"bw_plate\", \"bits\"])\n\n        # --- contadores de r\xE9plica por auto\
+      \ ---\n        self.rep_count = {}   # {id: next_rep_no}\n\n    # -----------------------------------------------------------\
+      \ #\n    def _save_record(self, car_id: int, img_bw: np.ndarray, bits: np.ndarray):\n\
+      \        # siguiente r\xE9plica #\n        rep_no = self.rep_count.get(car_id,\
+      \ 1)\n        self.rep_count[car_id] = rep_no + 1\n\n        stem = f\"auto{car_id:03d}_rep{rep_no:02d}\"\
+      \n        img_path  = self.dir_img  / f\"{stem}.png\"\n        bits_path = self.dir_bits\
+      \ / f\"{stem}.npy\"\n\n        cv2.imwrite(str(img_path), img_bw)\n        np.save(bits_path,\
+      \ bits.astype(np.uint8))\n\n        # guardar CSV\n        with self.csv_path.open(\"\
+      a\", newline=\"\") as f:\n            csv.writer(f).writerow([car_id, str(img_path),\
+      \ bits.tolist()])\n\n        print(f\"\U0001F4C1 Guardado {stem}\")\n\n    #\
+      \ ----------------------------------------------------------- #\n    def general_work(self,\
+      \ in_items, out_items):\n        data = in_items[0]\n        if len(data) ==\
+      \ 0:\n            return 0\n        self.buffer = np.append(self.buffer, data)\n\
+      \n        pkt_len = len(self.header) + self.id_len + self.expected\n       \
+      \ while True:\n            lim = len(self.buffer) - pkt_len\n            if\
+      \ lim < 0:\n                break\n\n            sync_found = False\n      \
+      \      for i in range(lim + 1):\n                if np.array_equal(self.buffer[i:i+len(self.header)],\
+      \ self.header):\n                    # zonas\n                    start_id \
+      \ = i + len(self.header)\n                    start_img = start_id + self.id_len\n\
+      \                    end_img   = start_img + self.expected\n               \
+      \     if len(self.buffer) < end_img:\n                        break  # espera\
+      \ m\xE1s bits\n                    # --- ID ---\n                    id_bits\
+      \ = self.buffer[start_id:start_id+self.id_len]\n                    car_id \
+      \ = np.packbits(id_bits)[0]\n                    # --- placa bits ---\n    \
+      \                plate_bits = self.buffer[start_img:end_img]\n             \
+      \       self.buffer = self.buffer[end_img:]  # descartar procesado\n       \
+      \             sync_found = True\n\n                    # reconstruir imagen\
+      \ (1=blanco)\n                    img_bw = (1 - plate_bits).astype(np.uint8).reshape(self.h,\
+      \ self.w) * 255\n\n                    if self.show:\n                     \
+      \   disp = img_bw.copy()\n                        cv2.putText(disp, f\"Auto\
+      \ {car_id:03d}\", (2, 14),\n                                    cv2.FONT_HERSHEY_SIMPLEX,\
+      \ 0.4, 255, 1, cv2.LINE_AA)\n                        cv2.imshow(\"Placa RX\"\
+      , disp)\n                        cv2.waitKey(1)\n\n                    # ---\
+      \ guardar en dataset / CSV\n                    self._save_record(car_id, img_bw,\
+      \ plate_bits)\n\n                    break\n            if not sync_found:\n\
+      \                # limitar tama\xF1o de buffer\n                if len(self.buffer)\
+      \ > 10 * pkt_len:\n                    self.buffer = self.buffer[-10*pkt_len:]\n\
+      \                break\n\n        self.consume(0, len(data))\n        return\
+      \ 0\n\n"
     affinity: ''
     alias: ''
     comment: ''
     height: '40'
     maxoutbuf: '0'
     minoutbuf: '0'
+    out_root: '"./dataset_rx_yolo"'
     show: 'True'
     width: '50'
   states:
-    _io_cache: ('bits2img', 'blk', [('width', '45'), ('height', '30'), ('show', 'True')],
-      [('0', 'byte', 1)], [], '', ['height', 'show', 'width'])
+    _io_cache: ('bits2img_id_csv', 'bits2img_id_csv', [('width', '50'), ('height',
+      '40'), ('out_root', "'./dataset_rx_yolo'"), ('show', 'True')], [('0', 'byte',
+      1)], [], '', ['show'])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -1017,7 +890,6 @@ connections:
 - [blocks_complex_to_float_0, '0', blocks_multiply_const_vxx_0_0, '0']
 - [blocks_delay_0, '0', blocks_xor_xx_1, '0']
 - [blocks_float_to_complex_0, '0', low_pass_filter_0, '0']
-- [blocks_float_to_uchar_0, '0', epy_block_0, '0']
 - [blocks_float_to_uchar_0, '0', epy_block_1, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_add_xx_0, '1']
 - [blocks_multiply_const_vxx_0_0, '0', digital_binary_slicer_fb_0, '0']

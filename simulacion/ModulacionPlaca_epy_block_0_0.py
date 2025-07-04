@@ -1,146 +1,91 @@
-import os, glob, cv2, numpy as np
+############################################################
+#   csv_bits_src.py  –  con ID del auto in‑band + tag       #
+############################################################
+import csv, ast, numpy as np, pmt
 from gnuradio import gr
-import pmt
 
-class img2bits(gr.basic_block):
-    """
-    Transmite N imágenes secuencialmente; cada una se repite `repeats` veces.
-
-    Parameters
-    ----------
-    dir_path : str
-        Carpeta que contiene las imágenes auto*.jpeg.
-    repeats : int
-        Número de veces que se enviará cada imagen.
-    mode : {"bits", "int"}
-        Igual que en tu versión original.
-    """
+class csv_bits_src(gr.basic_block):
 
     def __init__(self,
-                 dir_path="/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset/autos/",
-                 repeats=10,
-                 mode="bits"):
-        self.mode    = mode.lower().strip()
+                 csv_path="/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset_yolo/dataset_yolo.csv",
+                 repeats=10):
+
+        # ---- parámetros generales ----
         self.repeats = int(repeats)
+        self.header  = np.array([1,1,1,0,1,0,1,0,1], dtype=np.uint8)
 
-        # ── Obtener lista de archivos ───────────────────────────────────────
-        pattern = os.path.join(dir_path, "auto*.jp*g")  # acepta .jpeg o .jpg
-        self.files = sorted(glob.glob(pattern))
-        if not self.files:
-            raise RuntimeError(f"No se encontraron imágenes con patrón {pattern}")
+        # ---- cargar CSV -------------------------------------------------
+        self.bits_list = []   # [(id, bits), ...]
+        with open(csv_path, newline="") as f:
+            rdr = csv.DictReader(f)
+            for row in rdr:
+                bits = np.array(ast.literal_eval(row["bits"]), dtype=np.uint8)
+                if bits.size != 2000:
+                    print(f"⚠️  fila {row['num_auto']} tamaño {bits.size}")
+                    continue
+                car_id = int(row["num_auto"])  # 1..182
+                if not (0 < car_id < 256):
+                    print(f"⚠️  ID {car_id} fuera de rango 1‑255")
+                    continue
+                self.bits_list.append((car_id, bits))
 
-        # ── Señales de E/S ──────────────────────────────────────────────────
-        out_sig = [np.uint8] if self.mode == "bits" else None
-        gr.basic_block.__init__(self, name="img2bits_seq",
-                                in_sig=None, out_sig=out_sig)
+        if not self.bits_list:
+            raise RuntimeError("CSV sin bit‑arrays válidos.")
 
-        # ── Cabecera fija ───────────────────────────────────────────────────
-        self.header = np.array([1,1,1,0,1,0,1,0,1], dtype=np.uint8)
-
-        # ── Estado interno ──────────────────────────────────────────────────
-        self.file_idx   = 0          # índice en self.files
+        # ---- estado interno --------------------------------------------
+        self.row_idx     = 0
         self.repeat_left = self.repeats
-        self._load_payload()         # crea self.payload y self.packet_len
+        self._build_payload()
 
-        if self.mode == "int":
-            self.message_port_register_out(pmt.intern("out"))
+        gr.basic_block.__init__(self, name="csv_bits_src",
+                                in_sig=None, out_sig=[np.uint8])
 
-    # ------------------------------------------------------------------- #
-    #  UTILIDADES                                                         #
-    # ------------------------------------------------------------------- #
-    def _extract_bits(self, path):
-        """
-        Recorta la placa, binariza y devuelve un vector 0/1 de longitud fija.
-        (Mismo método que tenías, sin cambios funcionales).
-        """
-        img = cv2.imread(path)
-        if img is None:
-            raise RuntimeError(f"Imagen no encontrada: {path}")
+    # ------------------------------------------------------------------ #
+    def _build_payload(self):
+        car_id, bits = self.bits_list[self.row_idx]
 
-        hsv  = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv, (20,100,100), (35,255,255))
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE,
-                                cv2.getStructuringElement(cv2.MORPH_RECT, (5,5)))
+        # 1 byte con el ID (uint8)
+        id_byte   = np.array([car_id], dtype=np.uint8).view(np.uint8)
+        # convertir byte→bits (8 bits MSB primero)
+        id_bits   = np.unpackbits(id_byte)
 
-        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        plate, possible, area_max = None, None, 0
-        for c in cnts:
-            x,y,w,h = cv2.boundingRect(c)
-            r, area = w/float(h), w*h
-            if 1.8 < r < 3.2 and w > 40:
-                plate = img[y:y+h, x:x+w]; break
-            elif area > area_max and w > 60:
-                possible, area_max = img[y:y+h, x:x+w], area
-        if plate is None and possible is not None:
-            plate = possible
-            print(f"⚠️  {os.path.basename(path)}: placa fuera de proporción ideal")
-
-        if plate is None:
-            print(f"No se detectó placa en {path}, rellenando...")
-            return np.zeros(50 * 40, dtype=np.uint8)
-
-        plate = cv2.resize(plate, (50, 40))
-        gray  = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
-        _, bn = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY_INV)
-        return (bn == 0).flatten().astype(np.uint8)
-
-    def _load_payload(self):
-        """Carga bits de la imagen actual y prepara self.payload / len."""
-        actual_path   = self.files[self.file_idx]
-        img_bits      = self._extract_bits(actual_path)
-        self.payload  = np.concatenate((self.header, img_bits))
+        self.payload    = np.concatenate((self.header, id_bits, bits))
         self.packet_len = len(self.payload)
+        self.cur_id     = car_id  # guarda para etiquetar
 
-    def _advance_image(self):
-        """Pasa a la siguiente imagen y resetea el contador de repeticiones."""
-        self.file_idx += 1
-        if self.file_idx >= len(self.files):
-            self.file_idx = len(self.files)  # deja apuntando al final
-            return False                     # ya no hay más imágenes
+    def _next_row(self):
+        self.row_idx += 1
+        if self.row_idx >= len(self.bits_list):
+            return False
         self.repeat_left = self.repeats
-        self._load_payload()
+        self._build_payload()
         return True
 
-    # ------------------------------------------------------------------- #
-    #  GNU RADIO                                                          #
-    # ------------------------------------------------------------------- #
+    # ------------------------------------------------------------------ #
     def general_work(self, in_items, out_items):
-        if self.mode != "bits":
-            return 0
-
         out = out_items[0]
         if len(out) < self.packet_len:
-            return 0  # el búfer aún no alcanza
+            return 0
 
-        # ── Copiar paquete y etiquetar ───────────────────────────────────
         out[:self.packet_len] = self.payload
-        self.add_item_tag(0, self.nitems_written(0),
+
+        # tag con longitud y con ID (opcional pero útil)
+        offset = self.nitems_written(0)
+        self.add_item_tag(0, offset,
                           pmt.intern("packet_len"),
                           pmt.from_long(self.packet_len))
+        self.add_item_tag(0, offset,
+                          pmt.intern("car_id"),
+                          pmt.from_long(self.cur_id))
 
-        # ── ⬇️  mensaje de progreso  ⬇️ ───────────────────────────
-        rep_no = self.repeats - self.repeat_left + 1          # 1..10
-        img_no = self.file_idx + 1                            # 1..182
-        print(f"Imagen {img_no:03d} mandada {rep_no}")
-        # ────────────────────────────────────────────────────────────────
+        # mensaje de progreso
+        rep_idx = self.repeats - self.repeat_left + 1
+        print(f"Auto {self.cur_id:03d}  réplica {rep_idx}")
 
-        # ── Gestionar recuento y paso a la siguiente ────────────────────
+        # administración de repeticiones
         self.repeat_left -= 1
         if self.repeat_left == 0:
-            if not self._advance_image():     # sin más imágenes
-                return -1                     # EOF → detener flujo
-
+            if not self._next_row():
+                return -1
         return self.packet_len
-
-    def start(self):
-        """En modo 'int' publica cada paquete en un puerto de mensajes."""
-        if self.mode == "int":
-            packed = np.packbits(self.payload)
-            value  = int.from_bytes(packed.tobytes(), "big")
-            msg = pmt.cons(pmt.PMT_NIL,
-                           pmt.from_uint64(value)
-                           if value.bit_length() <= 64
-                           else pmt.init_u8vector(len(packed), packed))
-            self.message_port_pub(pmt.intern("out"), msg)
-        return super().start()
 
