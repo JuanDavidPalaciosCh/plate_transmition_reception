@@ -1,6 +1,6 @@
 # 📡 Proyecto de Comunicaciones: Transmisión y Recepción de Imágenes con GNU Radio
 
-Este proyecto implementa un sistema de transmisión y recepción de imágenes en escala de grises a través de radiofrecuencia, usando GNU Radio. Se analizan los errores de bit por distancia y se visualiza el desempeño del sistema a distintas condiciones de canal.
+Este proyecto implementa un sistema de transmisión y recepción de imágenes en blanco y negro a través de radiofrecuencia, usando GNU Radio. Se analizan los errores de bit por distancia y se visualiza el desempeño del sistema a distintas condiciones de canal.
 
 ---
 
