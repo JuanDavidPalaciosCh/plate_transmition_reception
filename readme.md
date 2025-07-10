@@ -18,7 +18,7 @@ Este proyecto implementa un sistema de transmisión y recepción de imágenes en
 
 ### 📥 Receptor
 
-![Receptor GNU Radio](./receptor/recepcionPlaca.png)  
+![Receptor GNU Radio](receptor/recepciónGnuradio.png)  
 🔗 [Ver carpeta del receptor](./receptor/)
 
 
