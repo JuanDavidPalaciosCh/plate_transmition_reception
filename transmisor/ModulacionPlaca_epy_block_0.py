@@ -1,84 +1,69 @@
-import cv2
-import numpy as np
+############################################################
+#   rand_img_src.py – envía 1 imagen aleatoria por disparo #
+############################################################
+import csv, ast, time, random, numpy as np, pmt
 from gnuradio import gr
-import pmt
 
-default_path = "/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/Img/auto1.jpeg"
 
-class blk(gr.basic_block):
-    def __init__(self, path=default_path, mode="bits"):
-        self.mode = mode.lower().strip()
-        out_sig = [np.uint8] if self.mode == "bits" else None
+class rand_img_src(gr.basic_block):
+    """
+    Puerto de entrada  : mensaje (trigger)  -> self.port_id("trigger")
+    Puerto de salida   : stream  uint8
+    Acción             : cada mensaje ≫ envía 1 paquete bits  +  ceros el resto
+    """
 
-        gr.basic_block.__init__(self,
-            name="img2bits",
-            in_sig=None,
-            out_sig=out_sig,
+    def __init__(
+        self,
+        csv_path="/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset_yolo/dataset_yolo.csv",
+        header_bits=[1, 0, 1, 0, 1, 0, 0, 0, 1, 1],
+        max_pkt_rate=10,   # ≈ muestras/s de los paquetes (para relleno)
+    ):
+        gr.basic_block.__init__(
+            self, name="rand_img_src", in_sig=None, out_sig=[np.uint8]
         )
 
-        self.header = np.array([1, 1, 1, 0, 1, 0, 1, 0, 1], dtype=np.uint8)
-        img_bits = self._extract_bits(path).astype(np.uint8)
+        # ── carga CSV ────────────────────────────────────────────────
+        self.bits_list = []
+        with open(csv_path, newline="") as f:
+            for row in csv.DictReader(f):
+                bits = np.array(ast.literal_eval(row["bits"]), dtype=np.uint8)
+                if bits.size == 2000:
+                    self.bits_list.append((int(row["num_auto"]), bits))
+        if not self.bits_list:
+            raise RuntimeError("CSV vacío o corrupto")
 
-        self.payload = np.concatenate((self.header, img_bits))
-        self.packet_len = len(self.payload)
-        self.index = 0
+        self.header   = np.array(header_bits, dtype=np.uint8)
+        self.zero_buf = np.zeros(max_pkt_rate, dtype=np.uint8)
 
-        if self.mode == "int":
-            self.message_port_register_out(pmt.intern("out"))
+        # estado
+        self.tx_queue = np.empty(0, dtype=np.uint8)   # bytes pendientes
 
-    def _extract_bits(self, path, show=False):
-        img = cv2.imread(path)
-        if img is None:
-            raise RuntimeError(f"Imagen no encontrada: {path}")
+        # ── puerto de disparo ────────────────────────────────────────
+        self.message_port_register_in(pmt.intern("trigger"))
+        self.set_msg_handler(pmt.intern("trigger"), self._on_trigger)
 
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv, (20, 100, 100), (35, 255, 255))
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
+    # .................................................................
+    def _on_trigger(self, _msg):
+        """Elige imagen aleatoria y la pone en cola para transmitir una vez."""
+        car_id, bits = random.choice(self.bits_list)
+        id_bits = np.unpackbits(np.array([car_id], dtype=np.uint8))
+        pkt = np.concatenate((self.header, id_bits, bits))
+        self.tx_queue = np.concatenate((self.tx_queue, pkt))
 
-        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        plate = None
-        possible_plate = None
-        max_area = 0
-
-        for c in cnts:
-            x, y, w, h = cv2.boundingRect(c)
-            r = w / float(h)
-            area = w * h
-            if 1.8 < r < 3.2 and w > 40:
-                plate = img[y:y+h, x:x+w]
-                break
-            elif area > max_area and w > 60:
-                possible_plate = img[y:y+h, x:x+w]
-                max_area = area
-
-        if plate is None and possible_plate is not None:
-            plate = possible_plate
-            print("⚠️ Usando placa con proporciones fuera de lo ideal")
-        if plate is None:
-            raise RuntimeError("No se encontró ninguna región que pueda ser una placa")
-
-        plate = cv2.resize(plate, (45, 30))
-        gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
-        _, bn = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY_INV)
-        return (bn == 0).flatten()
-
+    # .................................................................
     def general_work(self, in_items, out_items):
-        if self.mode != "bits":
-            return 0
-
         out = out_items[0]
-        if len(out) < self.packet_len:
-            return 0
+        n   = len(out)
 
-        out[:self.packet_len] = self.payload
-        self.add_item_tag(0, self.nitems_written(0), pmt.intern("packet_len"), pmt.from_long(self.packet_len))
-        return self.packet_len
+        # ¿hay paquete pendiente?
+        if self.tx_queue.size:
+            n_copy = min(n, self.tx_queue.size)
+            out[:n_copy] = self.tx_queue[:n_copy]
+            self.tx_queue = self.tx_queue[n_copy:]
+            return n_copy
 
-    def start(self):
-        if self.mode == "int":
-            packed = np.packbits(self.payload)
-            value = int.from_bytes(packed.tobytes(), "big")
-            msg = pmt.cons(pmt.PMT_NIL, pmt.from_uint64(value) if value.bit_length() <= 64 else pmt.init_u8vector(len(packed), packed))
-            self.message_port_pub(pmt.intern("out"), msg)
-        return super().start()
+        # si no, rellenamos con ceros para evitar underflow
+        n_zero = min(n, self.zero_buf.size)
+        out[:n_zero] = self.zero_buf[:n_zero]
+        return n_zero
 

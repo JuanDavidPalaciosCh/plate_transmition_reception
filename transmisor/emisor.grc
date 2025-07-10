@@ -1,6 +1,6 @@
 options:
   parameters:
-    author: fabian
+    author: Juan David Palacios ch
     catch_exceptions: 'True'
     category: '[GRC Hier Blocks]'
     cmake_opt: ''
@@ -93,7 +93,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1184, 384.0]
+    coordinate: [1392, 320.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -114,13 +114,31 @@ blocks:
     coordinate: [872, 244.0]
     rotation: 0
     state: true
+- name: blocks_multiply_const_vxx_1
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1168, 188.0]
+    rotation: 0
+    state: enabled
 - name: blocks_repeat_0
   id: blocks_repeat
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    interp: '15'
+    interp: '30'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: byte
@@ -129,7 +147,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [376, 180.0]
+    coordinate: [344, 172.0]
     rotation: 0
     state: true
 - name: blocks_uchar_to_float_1
@@ -182,117 +200,154 @@ blocks:
 - name: epy_block_0
   id: epy_block
   parameters:
-    _source_code: "import os, glob, cv2, numpy as np\nfrom gnuradio import gr\nimport\
-      \ pmt\n\nclass img2bits(gr.basic_block):\n    \"\"\"\n    Transmite N im\xE1\
-      genes secuencialmente; cada una se repite `repeats` veces.\n\n    Parameters\n\
-      \    ----------\n    dir_path : str\n        Carpeta que contiene las im\xE1\
-      genes auto*.jpeg.\n    repeats : int\n        N\xFAmero de veces que se enviar\xE1\
-      \ cada imagen.\n    mode : {\"bits\", \"int\"}\n        Igual que en tu versi\xF3\
-      n original.\n    \"\"\"\n\n    def __init__(self,\n                 dir_path=\"\
-      /home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset/autos/\"\
-      ,\n                 repeats=10,\n                 mode=\"bits\"):\n        self.mode\
-      \    = mode.lower().strip()\n        self.repeats = int(repeats)\n\n       \
-      \ # \u2500\u2500 Obtener lista de archivos \u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        pattern = os.path.join(dir_path,\
-      \ \"auto*.jp*g\")  # acepta .jpeg o .jpg\n        self.files = sorted(glob.glob(pattern))\n\
-      \        if not self.files:\n            raise RuntimeError(f\"No se encontraron\
-      \ im\xE1genes con patr\xF3n {pattern}\")\n\n        # \u2500\u2500 Se\xF1ales\
-      \ de E/S \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n \
-      \       out_sig = [np.uint8] if self.mode == \"bits\" else None\n        gr.basic_block.__init__(self,\
-      \ name=\"img2bits_seq\",\n                                in_sig=None, out_sig=out_sig)\n\
-      \n        # \u2500\u2500 Cabecera fija \u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+    _source_code: "############################################################\n\
+      #   rand_img_src.py \u2013 env\xEDa 1 imagen aleatoria por disparo #\n############################################################\n\
+      import csv, ast, time, random, numpy as np, pmt\nfrom gnuradio import gr\n\n\
+      \nclass rand_img_src(gr.basic_block):\n    \"\"\"\n    Puerto de entrada  :\
+      \ mensaje (trigger)  -> self.port_id(\"trigger\")\n    Puerto de salida   :\
+      \ stream  uint8\n    Acci\xF3n             : cada mensaje \u226B env\xEDa 1\
+      \ paquete bits  +  ceros el resto\n    \"\"\"\n\n    def __init__(\n       \
+      \ self,\n        csv_path=\"/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto\
+      \ final/dataset_yolo/dataset_yolo.csv\",\n        header_bits=[1, 0, 1, 0, 1,\
+      \ 0, 0, 0, 1, 1],\n        max_pkt_rate=10,   # \u2248 muestras/s de los paquetes\
+      \ (para relleno)\n    ):\n        gr.basic_block.__init__(\n            self,\
+      \ name=\"rand_img_src\", in_sig=None, out_sig=[np.uint8]\n        )\n\n    \
+      \    # \u2500\u2500 carga CSV \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\n        self.header = np.array([1,1,1,0,1,0,1,0,1],\
-      \ dtype=np.uint8)\n\n        # \u2500\u2500 Estado interno \u2500\u2500\u2500\
+      \u2500\n        self.bits_list = []\n        with open(csv_path, newline=\"\"\
+      ) as f:\n            for row in csv.DictReader(f):\n                bits = np.array(ast.literal_eval(row[\"\
+      bits\"]), dtype=np.uint8)\n                if bits.size == 2000:\n         \
+      \           self.bits_list.append((int(row[\"num_auto\"]), bits))\n        if\
+      \ not self.bits_list:\n            raise RuntimeError(\"CSV vac\xEDo o corrupto\"\
+      )\n\n        self.header   = np.array(header_bits, dtype=np.uint8)\n       \
+      \ self.zero_buf = np.zeros(max_pkt_rate, dtype=np.uint8)\n\n        # estado\n\
+      \        self.tx_queue = np.empty(0, dtype=np.uint8)   # bytes pendientes\n\n\
+      \        # \u2500\u2500 puerto de disparo \u2500\u2500\u2500\u2500\u2500\u2500\
       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
-      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        self.file_idx   =\
-      \ 0          # \xEDndice en self.files\n        self.repeat_left = self.repeats\n\
-      \        self._load_payload()         # crea self.payload y self.packet_len\n\
-      \n        if self.mode == \"int\":\n            self.message_port_register_out(pmt.intern(\"\
-      out\"))\n\n    # -------------------------------------------------------------------\
-      \ #\n    #  UTILIDADES                                                     \
-      \    #\n    # -------------------------------------------------------------------\
-      \ #\n    def _extract_bits(self, path):\n        \"\"\"\n        Recorta la\
-      \ placa, binariza y devuelve un vector 0/1 de longitud fija.\n        (Mismo\
-      \ m\xE9todo que ten\xEDas, sin cambios funcionales).\n        \"\"\"\n     \
-      \   img = cv2.imread(path)\n        if img is None:\n            raise RuntimeError(f\"\
-      Imagen no encontrada: {path}\")\n\n        hsv  = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)\n\
-      \        mask = cv2.inRange(hsv, (20,100,100), (35,255,255))\n        mask =\
-      \ cv2.morphologyEx(mask, cv2.MORPH_CLOSE,\n                                cv2.getStructuringElement(cv2.MORPH_RECT,\
-      \ (5,5)))\n\n        cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)\n\
-      \        plate, possible, area_max = None, None, 0\n        for c in cnts:\n\
-      \            x,y,w,h = cv2.boundingRect(c)\n            r, area = w/float(h),\
-      \ w*h\n            if 1.8 < r < 3.2 and w > 40:\n                plate = img[y:y+h,\
-      \ x:x+w]; break\n            elif area > area_max and w > 60:\n            \
-      \    possible, area_max = img[y:y+h, x:x+w], area\n        if plate is None\
-      \ and possible is not None:\n            plate = possible\n            print(f\"\
-      \u26A0\uFE0F  {os.path.basename(path)}: placa fuera de proporci\xF3n ideal\"\
-      )\n\n        if plate is None:\n            raise RuntimeError(f\"No se detect\xF3\
-      \ placa en {path}\")\n\n        plate = cv2.resize(plate, (50, 40))\n      \
-      \  gray  = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)\n        _, bn = cv2.threshold(gray,\
-      \ 100, 255, cv2.THRESH_BINARY_INV)\n        return (bn == 0).flatten().astype(np.uint8)\n\
-      \n    def _load_payload(self):\n        \"\"\"Carga bits de la imagen actual\
-      \ y prepara self.payload / len.\"\"\"\n        actual_path   = self.files[self.file_idx]\n\
-      \        img_bits      = self._extract_bits(actual_path)\n        self.payload\
-      \  = np.concatenate((self.header, img_bits))\n        self.packet_len = len(self.payload)\n\
-      \n    def _advance_image(self):\n        \"\"\"Pasa a la siguiente imagen y\
-      \ resetea el contador de repeticiones.\"\"\"\n        self.file_idx += 1\n \
-      \       if self.file_idx >= len(self.files):\n            self.file_idx = len(self.files)\
-      \  # deja apuntando al final\n            return False                     #\
-      \ ya no hay m\xE1s im\xE1genes\n        self.repeat_left = self.repeats\n  \
-      \      self._load_payload()\n        return True\n\n    # -------------------------------------------------------------------\
-      \ #\n    #  GNU RADIO                                                      \
-      \    #\n    # -------------------------------------------------------------------\
-      \ #\n    def general_work(self, in_items, out_items):\n        if self.mode\
-      \ != \"bits\":\n            return 0\n\n        out = out_items[0]\n       \
-      \ if len(out) < self.packet_len:\n            return 0  # b\xFAfer a\xFAn peque\xF1\
-      o\n\n        # Copiar payload y etiquetar\n        out[:self.packet_len] = self.payload\n\
-      \        self.add_item_tag(0, self.nitems_written(0),\n                    \
-      \      pmt.intern(\"packet_len\"),\n                          pmt.from_long(self.packet_len))\n\
-      \n        # Gestionar recuento / avance\n        self.repeat_left -= 1\n   \
-      \     if self.repeat_left == 0:\n            if not self._advance_image(): \
-      \  # sin m\xE1s im\xE1genes \u2192 detener\n                return -1      \
-      \             # se\xF1al EOF a GNU\_Radio\n\n        return self.packet_len\n\
-      \n    def start(self):\n        \"\"\"En modo 'int' publica cada paquete en\
-      \ un puerto de mensajes.\"\"\"\n        if self.mode == \"int\":\n         \
-      \   packed = np.packbits(self.payload)\n            value  = int.from_bytes(packed.tobytes(),\
-      \ \"big\")\n            msg = pmt.cons(pmt.PMT_NIL,\n                      \
-      \     pmt.from_uint64(value)\n                           if value.bit_length()\
-      \ <= 64\n                           else pmt.init_u8vector(len(packed), packed))\n\
-      \            self.message_port_pub(pmt.intern(\"out\"), msg)\n        return\
-      \ super().start()\n\n"
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        self.message_port_register_in(pmt.intern(\"\
+      trigger\"))\n        self.set_msg_handler(pmt.intern(\"trigger\"), self._on_trigger)\n\
+      \n    # .................................................................\n\
+      \    def _on_trigger(self, _msg):\n        \"\"\"Elige imagen aleatoria y la\
+      \ pone en cola para transmitir una vez.\"\"\"\n        car_id, bits = random.choice(self.bits_list)\n\
+      \        id_bits = np.unpackbits(np.array([car_id], dtype=np.uint8))\n     \
+      \   pkt = np.concatenate((self.header, id_bits, bits))\n        self.tx_queue\
+      \ = np.concatenate((self.tx_queue, pkt))\n\n    # .................................................................\n\
+      \    def general_work(self, in_items, out_items):\n        out = out_items[0]\n\
+      \        n   = len(out)\n\n        # \xBFhay paquete pendiente?\n        if\
+      \ self.tx_queue.size:\n            n_copy = min(n, self.tx_queue.size)\n   \
+      \         out[:n_copy] = self.tx_queue[:n_copy]\n            self.tx_queue =\
+      \ self.tx_queue[n_copy:]\n            return n_copy\n\n        # si no, rellenamos\
+      \ con ceros para evitar underflow\n        n_zero = min(n, self.zero_buf.size)\n\
+      \        out[:n_zero] = self.zero_buf[:n_zero]\n        return n_zero\n\n"
     affinity: ''
     alias: ''
     comment: ''
-    dir_path: '"/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto
-      final/dataset/autos/"'
+    csv_path: '"/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto
+      final/dataset_yolo/dataset_yolo.csv"'
+    header_bits: '[1, 0, 1, 0, 1, 0, 0, 0, 1, 1]'
+    max_pkt_rate: '10'
     maxoutbuf: '0'
     minoutbuf: '0'
-    mode: '"bits"'
-    repeats: '10'
   states:
-    _io_cache: "('img2bits_seq', 'img2bits', [('dir_path', \"'/home/jpalaciosch/Documents/UNAL/Septimo\
-      \ semestre/Comunicaciones/Proyecto final/dataset/autos/'\"), ('repeats', '10'),\
-      \ ('mode', \"'bits'\")], [], [('0', 'byte', 1)], '\\nTransmite N im\xE1genes\
-      \ secuencialmente; cada una se repite `repeats` veces.\\n\\nParameters\\n----------\\\
-      ndir_path : str\\n    Carpeta que contiene las im\xE1genes auto*.jpeg.\\nrepeats\
-      \ : int\\n    N\xFAmero de veces que se enviar\xE1 cada imagen.\\nmode : {\"\
-      bits\", \"int\"}\\n    Igual que en tu versi\xF3n original.\\n', ['mode', 'repeats'])"
+    _io_cache: "('rand_img_src', 'rand_img_src', [('csv_path', \"'/home/jpalaciosch/Documents/UNAL/Septimo\
+      \ semestre/Comunicaciones/Proyecto final/dataset_yolo/dataset_yolo.csv'\"),\
+      \ ('header_bits', '[1, 0, 1, 0, 1, 0, 0, 0, 1, 1]'), ('max_pkt_rate', '10')],\
+      \ [('trigger', 'message', 1)], [('0', 'byte', 1)], '\\nPuerto de entrada  :\
+      \ mensaje (trigger)  -> self.port_id(\"trigger\")\\nPuerto de salida   : stream\
+      \  uint8\\nAcci\xF3n             : cada mensaje \u226B env\xEDa 1 paquete bits\
+      \  +  ceros el resto\\n', [])"
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [120, 172.0]
+    coordinate: [288, 460.0]
     rotation: 0
-    state: true
+    state: disabled
+- name: epy_block_0_0
+  id: epy_block
+  parameters:
+    _source_code: "############################################################\n\
+      #   csv_bits_src.py  \u2013  con relleno de ceros en la pausa    #\n############################################################\n\
+      import csv, ast, time, numpy as np, pmt\nfrom gnuradio import gr\n\n\nclass\
+      \ csv_bits_src(gr.basic_block):\n    def __init__(\n        self,\n        csv_path=(\n\
+      \            \"/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/\"\
+      \n            \"Proyecto final/dataset_yolo/dataset_yolo.csv\"\n        ),\n\
+      \        repeats=10,\n        pause_s=0.5,\n    ):\n        # \u2500\u2500\u2500\
+      \ par\xE1metros generales \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \n        self.repeats  = int(repeats)\n        self.pause_s  = pause_s\n  \
+      \      self.header   = np.array([1, 0, 1, 0, 1, 0, 0, 0, 1, 1], dtype=np.uint8)\n\
+      \n        # \u2500\u2500\u2500 cargar CSV \u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \n        self.bits_list = []\n        with open(csv_path, newline=\"\") as\
+      \ f:\n            for row in csv.DictReader(f):\n                bits = np.array(ast.literal_eval(row[\"\
+      bits\"]), dtype=np.uint8)\n                if bits.size != 2000:\n         \
+      \           print(f\"\u26A0\uFE0F  fila {row['num_auto']} tama\xF1o {bits.size}\"\
+      )\n                    continue\n                car_id = int(row[\"num_auto\"\
+      ])\n                if not (0 < car_id < 256):\n                    print(f\"\
+      \u26A0\uFE0F  ID {car_id} fuera de rango 1\u2011255\")\n                   \
+      \ continue\n                self.bits_list.append((car_id, bits))\n\n      \
+      \  if not self.bits_list:\n            raise RuntimeError(\"CSV sin bit\u2011\
+      arrays v\xE1lidos.\")\n\n        # \u2500\u2500\u2500 estado interno \u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\
+      \n        self.row_idx       = 0\n        self.repeat_left   = self.repeats\n\
+      \        self._build_payload()\n\n        # primer env\xEDo inmediato\n    \
+      \    self.next_emit_t   = 0.0\n\n        gr.basic_block.__init__(\n        \
+      \    self, name=\"csv_bits_src\", in_sig=None, out_sig=[np.uint8]\n        )\n\
+      \n    # ------------------------------------------------------------------\n\
+      \    def _build_payload(self):\n        car_id, bits = self.bits_list[self.row_idx]\n\
+      \        id_bits      = np.unpackbits(np.array([car_id], dtype=np.uint8))\n\
+      \        self.payload     = np.concatenate((self.header, id_bits, bits))\n \
+      \       self.packet_len  = len(self.payload)\n        self.cur_id      = car_id\n\
+      \n    def _next_row(self):\n        self.row_idx += 1\n        if self.row_idx\
+      \ >= len(self.bits_list):\n            return False\n        self.repeat_left\
+      \ = self.repeats\n        self._build_payload()\n        return True\n\n   \
+      \ # ------------------------------------------------------------------\n   \
+      \ def general_work(self, in_items, out_items):\n        out = out_items[0]\n\
+      \        now = time.time()\n\n        # \u2261\u2261 PAUSA: enviar ceros para\
+      \ evitar underflow \u2261\u2261\n        if now < self.next_emit_t:\n      \
+      \      n = len(out)\n            if n:                       # s\xF3lo si hay\
+      \ espacio en el b\xFAfer\n                out[:n] = 0             # ceros l\xF3\
+      gicos\n            return n                    # informar que llenamos n muestras\n\
+      \n        # \u2261\u2261 Enviar el paquete \u2261\u2261\n        if len(out)\
+      \ < self.packet_len:\n            return 0                    # espera a tener\
+      \ b\xFAfer suficiente\n\n        out[: self.packet_len] = self.payload\n\n \
+      \       # etiquetas\n        offset = self.nitems_written(0)\n        self.add_item_tag(0,\
+      \ offset, pmt.intern(\"packet_len\"),\n                          pmt.from_long(self.packet_len))\n\
+      \        self.add_item_tag(0, offset, pmt.intern(\"car_id\"),\n            \
+      \              pmt.from_long(self.cur_id))\n\n        # log\n        rep_idx\
+      \ = self.repeats - self.repeat_left + 1\n        print(f\"Auto {self.cur_id:03d}\
+      \  r\xE9plica {rep_idx}\")\n\n        # programa la pr\xF3xima pausa\n     \
+      \   self.next_emit_t = now + self.pause_s\n\n        # administra repeticiones\n\
+      \        self.repeat_left -= 1\n        if self.repeat_left == 0:\n        \
+      \    if not self._next_row():\n                return -1               # fin\
+      \ de archivo\n\n        return self.packet_len\n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    csv_path: '"/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto
+      final/dataset_yolo/dataset_yolo.csv"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pause_s: '0.0005'
+    repeats: '20'
+  states:
+    _io_cache: ('csv_bits_src', 'csv_bits_src', [('csv_path', "'/home/jpalaciosch/Documents/UNAL/Septimo
+      semestre/Comunicaciones/Proyecto final/dataset_yolo/dataset_yolo.csv'"), ('repeats',
+      '10'), ('pause_s', '0.5')], [], [('0', 'byte', 1)], '', ['pause_s', 'repeats'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 172.0]
+    rotation: 0
+    state: enabled
 - name: qtgui_sink_x_0
   id: qtgui_sink_x
   parameters:
@@ -319,9 +374,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1376, 84.0]
+    coordinate: [1400, 28.0]
     rotation: 0
     state: enabled
+- name: trigger
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: msg
+    msgName: trigger
+    relBackgroundColor: default
+    relFontColor: default
+    type: bool
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [0, 396.0]
+    rotation: 0
+    state: disabled
 - name: uhd_usrp_sink_0
   id: uhd_usrp_sink
   parameters:
@@ -435,7 +508,7 @@ blocks:
     comment: ''
     dev_addr: '""'
     dev_args: ''
-    gain0: '30'
+    gain0: '80'
     gain1: '0'
     gain10: '0'
     gain11: '0'
@@ -596,22 +669,25 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1432, 348.0]
+    coordinate: [1600, 164.0]
     rotation: 0
     state: enabled
 
 connections:
 - [analog_const_source_x_0, '0', blocks_xor_xx_0, '1']
-- [blocks_add_xx_0, '0', blocks_float_to_complex_0, '0']
-- [blocks_add_xx_0, '0', qtgui_sink_x_0, '0']
+- [blocks_add_xx_0, '0', blocks_multiply_const_vxx_1, '0']
 - [blocks_float_to_complex_0, '0', uhd_usrp_sink_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_add_xx_0, '1']
+- [blocks_multiply_const_vxx_1, '0', blocks_float_to_complex_0, '0']
+- [blocks_multiply_const_vxx_1, '0', qtgui_sink_x_0, '0']
 - [blocks_repeat_0, '0', blocks_uchar_to_float_1_0, '0']
 - [blocks_repeat_0, '0', blocks_xor_xx_0, '0']
 - [blocks_uchar_to_float_1, '0', blocks_multiply_const_vxx_0, '0']
 - [blocks_uchar_to_float_1_0, '0', blocks_add_xx_0, '0']
 - [blocks_xor_xx_0, '0', blocks_uchar_to_float_1, '0']
 - [epy_block_0, '0', blocks_repeat_0, '0']
+- [epy_block_0_0, '0', blocks_repeat_0, '0']
+- [trigger, pressed, epy_block_0, trigger]
 
 metadata:
   file_format: 1

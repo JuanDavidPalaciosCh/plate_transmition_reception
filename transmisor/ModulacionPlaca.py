@@ -6,7 +6,7 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Not titled yet
-# Author: fabian
+# Author: Juan David Palacios ch
 # GNU Radio version: 3.10.12.0
 
 from PyQt5 import Qt
@@ -24,7 +24,7 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import uhd
 import time
-import ModulacionPlaca_epy_block_0 as epy_block_0  # embedded python block
+import ModulacionPlaca_epy_block_0_0 as epy_block_0_0  # embedded python block
 import sip
 import threading
 
@@ -86,7 +86,7 @@ class ModulacionPlaca(gr.top_block, Qt.QWidget):
 
         self.uhd_usrp_sink_0.set_center_freq(433e6, 0)
         self.uhd_usrp_sink_0.set_antenna("TX/RX", 0)
-        self.uhd_usrp_sink_0.set_gain(30, 0)
+        self.uhd_usrp_sink_0.set_gain(80, 0)
         self.qtgui_sink_x_0 = qtgui.sink_f(
             1024, #fftsize
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -105,11 +105,12 @@ class ModulacionPlaca(gr.top_block, Qt.QWidget):
         self.qtgui_sink_x_0.enable_rf_freq(False)
 
         self.top_layout.addWidget(self._qtgui_sink_x_0_win)
-        self.epy_block_0 = epy_block_0.blk(path="/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/Img/auto1.jpeg", mode="bits")
+        self.epy_block_0_0 = epy_block_0_0.csv_bits_src(csv_path="/home/jpalaciosch/Documents/UNAL/Septimo semestre/Comunicaciones/Proyecto final/dataset_yolo/dataset_yolo.csv", repeats=20, pause_s=0.0005)
         self.blocks_xor_xx_0 = blocks.xor_bb()
         self.blocks_uchar_to_float_1_0 = blocks.uchar_to_float()
         self.blocks_uchar_to_float_1 = blocks.uchar_to_float()
-        self.blocks_repeat_0 = blocks.repeat(gr.sizeof_char*1, 15)
+        self.blocks_repeat_0 = blocks.repeat(gr.sizeof_char*1, 30)
+        self.blocks_multiply_const_vxx_1 = blocks.multiply_const_ff(2)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff((-1))
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_add_xx_0 = blocks.add_vff(1)
@@ -120,16 +121,17 @@ class ModulacionPlaca(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.connect((self.analog_const_source_x_0, 0), (self.blocks_xor_xx_0, 1))
-        self.connect((self.blocks_add_xx_0, 0), (self.blocks_float_to_complex_0, 0))
-        self.connect((self.blocks_add_xx_0, 0), (self.qtgui_sink_x_0, 0))
+        self.connect((self.blocks_add_xx_0, 0), (self.blocks_multiply_const_vxx_1, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.uhd_usrp_sink_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.blocks_multiply_const_vxx_1, 0), (self.blocks_float_to_complex_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_1, 0), (self.qtgui_sink_x_0, 0))
         self.connect((self.blocks_repeat_0, 0), (self.blocks_uchar_to_float_1_0, 0))
         self.connect((self.blocks_repeat_0, 0), (self.blocks_xor_xx_0, 0))
         self.connect((self.blocks_uchar_to_float_1, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.blocks_uchar_to_float_1_0, 0), (self.blocks_add_xx_0, 0))
         self.connect((self.blocks_xor_xx_0, 0), (self.blocks_uchar_to_float_1, 0))
-        self.connect((self.epy_block_0, 0), (self.blocks_repeat_0, 0))
+        self.connect((self.epy_block_0_0, 0), (self.blocks_repeat_0, 0))
 
 
     def closeEvent(self, event):
